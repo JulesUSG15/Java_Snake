@@ -87,4 +87,68 @@ public class Main extends JPanel{
 			}
 		} while(!positionAvailable);
 	}
+    @Override
+	protected void paintComponent(Graphics g) {
+		super.paintComponent(g);
+		
+		if(gameLost) {
+			g.setColor(Color.RED);
+			g.setFont(new Font("Arial", 90, 90));
+			g.drawString("Partie terminée", 13*50/2 - g.getFontMetrics().stringWidth("Partie terminée")/2, 13*50/2);
+			return;
+		}
+		
+		offset += 5;
+		SnakePart head = null;
+		if(offset == WIDTH) {
+			offset = 0;
+			try {
+				head = (SnakePart) snake.getFirst().clone();
+				head.move();
+				head.direction = newDirection;
+				snake.addFirst(head);
+				if(head.x == apple.x && head.y == apple.y) {
+					isGrowing = true;
+					createApple();
+				}
+				if(!isGrowing)
+					snake.pollLast();
+				else
+					isGrowing = false;
+			} catch (CloneNotSupportedException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		g.setColor(Color.red);
+		g.fillOval(apple.x*WIDTH + WIDTH/4, apple.y*WIDTH + WIDTH/4, WIDTH/2, WIDTH/2);
+		
+		g.setColor(Color.DARK_GRAY);
+		for(SnakePart p : snake) {
+			if(offset == 0) {
+				if(p != head) {
+					if(p.x == head.x && p.y == head.y) {
+						gameLost = true;
+					}
+				}
+			}
+			if(p.direction == 37 || p.direction == 39) {
+				g.fillRect(p.x * WIDTH + ((p.direction == 37) ? -offset : offset), p.y*WIDTH, WIDTH, WIDTH);
+			} else {
+				g.fillRect(p.x * WIDTH, p.y*WIDTH + ((p.direction == 38) ? -offset : offset), WIDTH, WIDTH);
+			}
+		}
+		
+		g.setColor(Color.BLUE);
+		g.drawString("Score : "+(snake.size() -1), 10, 20);
+		
+	}
+	
+	public void onKeyPressed(int keyCode) {
+		if(keyCode >= 37 && keyCode <= 40) {
+			if(Math.abs(keyCode - newDirection) != 2) {
+				newDirection = keyCode;
+			}
+		}
+	}
 }
