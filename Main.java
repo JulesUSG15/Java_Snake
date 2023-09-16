@@ -73,4 +73,18 @@ public class Main extends JPanel{
 			}
 		}).start();
 	}
+    public void createApple() {
+		boolean positionAvailable;
+		do {
+			apple.x = rand.nextInt(12);
+			apple.y = rand.nextInt(12);
+			positionAvailable = true;
+			for(SnakePart p : snake) {
+				if(p.x == apple.x && p.y == apple.y) {
+					positionAvailable = false;
+					break;
+				}
+			}
+		} while(!positionAvailable);
+	}
 }
